@@ -70,20 +70,21 @@ def test_post_config_rejects_weights_not_summing_to_100(tmp_path: Path) -> None:
     assert "sum to 100" in response.json()["detail"]
 
 
-def test_post_roll_returns_valid_selection(tmp_path: Path) -> None:
+def test_post_select_shelf_returns_valid_selection(tmp_path: Path) -> None:
     client = make_client(tmp_path)
-    response = client.post("/api/roll")
+    response = client.post("/api/select-shelf")
 
     assert response.status_code == 200
     body = response.json()
     assert body["category"] in {"Science Fiction", "Belletristik", "Sachbücher"}
     assert 1 <= body["segment"] <= body["segments_total"]
-    assert 1 <= body["die_roll"] <= body["die_faces"]
-    assert body["die_glyph"]
+    assert body["dice_faces"] == 6
     assert body["category"] in body["instruction"]
 
 
-def test_post_roll_returns_400_when_no_categories_configured(tmp_path: Path) -> None:
+def test_post_select_shelf_returns_400_when_no_categories_configured(
+    tmp_path: Path,
+) -> None:
     client = make_client(tmp_path)
     client.post(
         "/api/config",
@@ -93,6 +94,17 @@ def test_post_roll_returns_400_when_no_categories_configured(tmp_path: Path) -> 
         },
     )
 
-    response = client.post("/api/roll")
+    response = client.post("/api/select-shelf")
 
     assert response.status_code == 400
+
+
+def test_post_roll_die_returns_valid_roll(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    response = client.post("/api/roll-die")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["die_faces"] == 6
+    assert 1 <= body["die_roll"] <= body["die_faces"]
+    assert body["die_glyph"]

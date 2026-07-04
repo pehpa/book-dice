@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import random
 from pathlib import Path
 
 import uvicorn
@@ -10,20 +11,24 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from book_dice.config import Config, load_config, save_config
-from book_dice.core import format_die, run_selection
+from book_dice.core import format_die, roll_die, select_shelf
 
 STATIC_DIR = Path(__file__).parent / "static"
 
 
-class RollResponse(BaseModel):
+class ShelfSelectionResponse(BaseModel):
     category: str
     weight_percent: float
     segment: int
     segments_total: int
+    dice_faces: int
+    instruction: str
+
+
+class DieRollResponse(BaseModel):
     die_roll: int
     die_faces: int
     die_glyph: str
-    instruction: str
 
 
 def create_app(config_path: Path) -> FastAPI:
@@ -47,28 +52,37 @@ def create_app(config_path: Path) -> FastAPI:
         save_config(config_path, config)
         return config
 
-    @app.post("/api/roll")
-    def roll() -> RollResponse:
+    @app.post("/api/select-shelf")
+    def select_shelf_endpoint() -> ShelfSelectionResponse:
         config = load_config(config_path)
         try:
-            result = run_selection(config)
+            shelf = select_shelf(config)
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-        return RollResponse(
-            category=result.category_name,
-            weight_percent=result.weight_percent,
-            segment=result.segment,
-            segments_total=result.segments_total,
-            die_roll=result.die_roll,
-            die_faces=result.die_faces,
-            die_glyph=format_die(result.die_roll, result.die_faces),
+        dice_faces = config.settings.default_dice_faces
+        return ShelfSelectionResponse(
+            category=shelf.category_name,
+            weight_percent=shelf.weight_percent,
+            segment=shelf.segment,
+            segments_total=shelf.segments_total,
+            dice_faces=dice_faces,
             instruction=(
-                f"Go to your '{result.category_name}' section, "
-                f"Section {result.segment}. "
-                f"Pick {result.die_faces} books from that shelf. "
-                f"Roll a W{result.die_faces} die to select your final book!"
+                f"Go to your '{shelf.category_name}' section, "
+                f"Section {shelf.segment}. "
+                f"Pick {dice_faces} books from that shelf."
             ),
+        )
+
+    @app.post("/api/roll-die")
+    def roll_die_endpoint() -> DieRollResponse:
+        config = load_config(config_path)
+        dice_faces = config.settings.default_dice_faces
+        die_roll = roll_die(dice_faces, random.Random())
+        return DieRollResponse(
+            die_roll=die_roll,
+            die_faces=dice_faces,
+            die_glyph=format_die(die_roll, dice_faces),
         )
 
     return app

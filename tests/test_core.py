@@ -10,7 +10,7 @@ from book_dice.core import (
     pick_category,
     pick_segment,
     roll_die,
-    run_selection,
+    select_shelf,
 )
 
 
@@ -73,7 +73,7 @@ def test_format_die_uses_plain_number_for_other_faces() -> None:
     assert format_die(5, 8) == "5"
 
 
-def test_run_selection_returns_valid_result() -> None:
+def test_select_shelf_returns_valid_result() -> None:
     config = Config(
         settings=Settings(default_dice_faces=6, web_port=5000),
         categories={
@@ -81,29 +81,16 @@ def test_run_selection_returns_valid_result() -> None:
             "Belletristik": Category(weight=20, segments=6),
         },
     )
-    result = run_selection(config, rng=random.Random(7))
+    shelf = select_shelf(config, rng=random.Random(7))
 
-    assert result.category_name in config.categories
-    category = config.categories[result.category_name]
-    assert 1 <= result.segment <= category.segments
-    assert result.segments_total == category.segments
-    assert 1 <= result.die_roll <= 6
-    assert result.die_faces == 6
-    assert result.weight_percent == pytest.approx((category.weight / 70) * 100)
+    assert shelf.category_name in config.categories
+    category = config.categories[shelf.category_name]
+    assert 1 <= shelf.segment <= category.segments
+    assert shelf.segments_total == category.segments
+    assert shelf.weight_percent == pytest.approx((category.weight / 70) * 100)
 
 
-def test_run_selection_respects_dice_faces_override() -> None:
-    config = Config(
-        settings=Settings(default_dice_faces=6, web_port=5000),
-        categories={"Only": Category(weight=1, segments=1)},
-    )
-    result = run_selection(config, dice_faces=8, rng=random.Random(3))
-
-    assert result.die_faces == 8
-    assert 1 <= result.die_roll <= 8
-
-
-def test_run_selection_raises_on_empty_categories() -> None:
+def test_select_shelf_raises_on_empty_categories() -> None:
     config = Config(settings=Settings(), categories={})
     with pytest.raises(ValueError):
-        run_selection(config, rng=random.Random(0))
+        select_shelf(config, rng=random.Random(0))

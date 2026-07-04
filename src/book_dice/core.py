@@ -46,23 +46,19 @@ def roll_die(faces: int, rng: random.Random) -> int:
 
 
 @dataclass
-class SelectionResult:
+class ShelfSelection:
     category_name: str
     weight_percent: float
     segment: int
     segments_total: int
-    die_roll: int
-    die_faces: int
 
 
-def run_selection(
+def select_shelf(
     config: Config,
-    dice_faces: int | None = None,
     rng: random.Random | None = None,
-) -> SelectionResult:
+) -> ShelfSelection:
     if rng is None:
         rng = random.Random()
-    faces = dice_faces if dice_faces is not None else config.settings.default_dice_faces
 
     category_name = pick_category(config.categories, rng)
     category = config.categories[category_name]
@@ -70,13 +66,10 @@ def run_selection(
     weight_percent = (category.weight / total_weight) * 100
 
     segment = pick_segment(category.segments, rng)
-    die_roll = roll_die(faces, rng)
 
-    return SelectionResult(
+    return ShelfSelection(
         category_name=category_name,
         weight_percent=weight_percent,
         segment=segment,
         segments_total=category.segments,
-        die_roll=die_roll,
-        die_faces=faces,
     )

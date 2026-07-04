@@ -8,9 +8,12 @@ from book_dice.config import Category, Config, Settings, save_config
 
 
 def test_main_runs_selection_and_creates_default_config(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     config_path = tmp_path / "config.json"
+    monkeypatch.setattr("builtins.input", lambda prompt="": "")
 
     exit_code = cli.main(["--config", str(config_path)])
 
@@ -22,11 +25,49 @@ def test_main_runs_selection_and_creates_default_config(
     assert "🎲 book-dice SELECTION 🎲" in out.out
     assert re.search(r"\[STAGE 1\] Category:\s+.+\(Weight: \d+%\)", out.out)
     assert re.search(r"\[STAGE 2\] Segment:\s+Shelf Section \d+ \(of \d+\)", out.out)
+    assert "Pick 6 books from that shelf." in out.out
     assert "Digital Roll Result" in out.out
 
 
+def test_main_waits_for_confirmation_before_rolling_die(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config_path = tmp_path / "config.json"
+    save_config(
+        config_path,
+        Config(
+            settings=Settings(), categories={"Only": Category(weight=100, segments=1)}
+        ),
+    )
+
+    prompts: list[str] = []
+
+    def fake_input(prompt: str = "") -> str:
+        prompts.append(prompt)
+        print(prompt, end="")
+        return ""
+
+    monkeypatch.setattr("builtins.input", fake_input)
+
+    exit_code = cli.main(["--config", str(config_path)])
+
+    assert exit_code == 0
+    assert len(prompts) == 1
+    assert "Press Enter" in prompts[0]
+
+    out = capsys.readouterr()
+    before_prompt, after_prompt = out.out.split(prompts[0])
+    assert "Pick" in before_prompt
+    assert "Digital Roll Result" not in before_prompt
+    assert "Digital Roll Result" in after_prompt
+
+
 def test_main_does_not_warn_when_config_already_exists(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     config_path = tmp_path / "config.json"
     save_config(
@@ -35,6 +76,7 @@ def test_main_does_not_warn_when_config_already_exists(
             settings=Settings(), categories={"Only": Category(weight=1, segments=1)}
         ),
     )
+    monkeypatch.setattr("builtins.input", lambda prompt="": "")
 
     exit_code = cli.main(["--config", str(config_path)])
 
@@ -45,7 +87,9 @@ def test_main_does_not_warn_when_config_already_exists(
 
 
 def test_main_respects_dice_override(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     config_path = tmp_path / "config.json"
     save_config(
@@ -54,13 +98,14 @@ def test_main_respects_dice_override(
             settings=Settings(), categories={"Only": Category(weight=1, segments=1)}
         ),
     )
+    monkeypatch.setattr("builtins.input", lambda prompt="": "")
 
     exit_code = cli.main(["--config", str(config_path), "--dice", "8"])
 
     assert exit_code == 0
     out = capsys.readouterr()
     assert "Pick 8 books from that shelf." in out.out
-    assert "Roll a W8 die to select your final book!" in out.out
+    assert re.search(r"Your digital die landed on: \d+", out.out)
 
 
 def test_main_reports_error_on_empty_categories(

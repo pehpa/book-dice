@@ -3,32 +3,36 @@
 from __future__ import annotations
 
 import argparse
+import random
 import sys
 from pathlib import Path
 
 from book_dice.config import DEFAULT_CONFIG_PATH, load_config
-from book_dice.core import SelectionResult, format_die, run_selection
+from book_dice.core import ShelfSelection, format_die, roll_die, select_shelf
 from book_dice.web import run_server
 
 
-def format_result(result: SelectionResult) -> str:
-    weight_str = f"{result.weight_percent:.0f}%"
+def format_shelf_selection(shelf: ShelfSelection, dice_faces: int) -> str:
+    weight_str = f"{shelf.weight_percent:.0f}%"
     lines = [
         "🎲 book-dice SELECTION 🎲",
         "-" * 38,
-        f"[STAGE 1] Category:  {result.category_name} (Weight: {weight_str})",
-        f"[STAGE 2] Segment:   Shelf Section {result.segment} "
-        f"(of {result.segments_total})",
+        f"[STAGE 1] Category:  {shelf.category_name} (Weight: {weight_str})",
+        f"[STAGE 2] Segment:   Shelf Section {shelf.segment} "
+        f"(of {shelf.segments_total})",
         "-" * 38,
         "👉 INSTRUCTION:",
-        f"Go to your '{result.category_name}' section, Section {result.segment}.",
-        f"Pick {result.die_faces} books from that shelf.",
-        f"Roll a W{result.die_faces} die to select your final book!",
-        "",
-        "[Digital Roll Result]: Your digital die landed on: "
-        f"{format_die(result.die_roll, result.die_faces)}",
+        f"Go to your '{shelf.category_name}' section, Section {shelf.segment}.",
+        f"Pick {dice_faces} books from that shelf.",
     ]
     return "\n".join(lines)
+
+
+def format_die_result(die_roll: int, dice_faces: int) -> str:
+    return (
+        "[Digital Roll Result]: Your digital die landed on: "
+        f"{format_die(die_roll, dice_faces)}"
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -67,11 +71,22 @@ def main(argv: list[str] | None = None) -> int:
         run_server(args.config, port=config.settings.web_port)
         return 0
 
+    dice_faces = (
+        args.dice if args.dice is not None else config.settings.default_dice_faces
+    )
+    if dice_faces < 1:
+        print("Error: dice faces must be at least 1", file=sys.stderr)
+        return 1
+
     try:
-        result = run_selection(config, dice_faces=args.dice)
+        shelf = select_shelf(config)
     except ValueError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
 
-    print(format_result(result))
+    print(format_shelf_selection(shelf, dice_faces))
+    input("\nPress Enter once you've picked your books to roll the die... ")
+
+    die_roll = roll_die(dice_faces, random.Random())
+    print(format_die_result(die_roll, dice_faces))
     return 0
