@@ -6,7 +6,7 @@ import random
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
@@ -75,14 +75,18 @@ def create_app(config_path: Path) -> FastAPI:
         )
 
     @app.post("/api/roll-die")
-    def roll_die_endpoint() -> DieRollResponse:
+    def roll_die_endpoint(
+        dice_faces: int | None = Query(default=None, ge=1),
+    ) -> DieRollResponse:
         config = load_config(config_path)
-        dice_faces = config.settings.default_dice_faces
-        die_roll = roll_die(dice_faces, random.Random())
+        faces = (
+            dice_faces if dice_faces is not None else config.settings.default_dice_faces
+        )
+        die_roll = roll_die(faces, random.Random())
         return DieRollResponse(
             die_roll=die_roll,
-            die_faces=dice_faces,
-            die_glyph=format_die(die_roll, dice_faces),
+            die_faces=faces,
+            die_glyph=format_die(die_roll, faces),
         )
 
     return app

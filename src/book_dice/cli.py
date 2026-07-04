@@ -85,7 +85,20 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     print(format_shelf_selection(shelf, dice_faces))
-    input("\nPress Enter once you've picked your books to roll the die... ")
+    response = input(
+        f"\nPress Enter to roll a W{dice_faces} die, "
+        "or type how many books you actually picked: "
+    ).strip()
+
+    if response:
+        try:
+            dice_faces = int(response)
+        except ValueError:
+            print(f"Error: '{response}' is not a whole number", file=sys.stderr)
+            return 1
+        if dice_faces < 1:
+            print("Error: number of books must be at least 1", file=sys.stderr)
+            return 1
 
     die_roll = roll_die(dice_faces, random.Random())
     print(format_die_result(die_roll, dice_faces))

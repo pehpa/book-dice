@@ -108,3 +108,20 @@ def test_post_roll_die_returns_valid_roll(tmp_path: Path) -> None:
     assert body["die_faces"] == 6
     assert 1 <= body["die_roll"] <= body["die_faces"]
     assert body["die_glyph"]
+
+
+def test_post_roll_die_respects_dice_faces_override(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    response = client.post("/api/roll-die?dice_faces=3")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["die_faces"] == 3
+    assert 1 <= body["die_roll"] <= 3
+
+
+def test_post_roll_die_rejects_dice_faces_below_one(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    response = client.post("/api/roll-die?dice_faces=0")
+
+    assert response.status_code == 422
