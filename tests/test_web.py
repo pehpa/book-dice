@@ -54,6 +54,34 @@ def test_post_config_rejects_invalid_payload(tmp_path: Path) -> None:
     assert response.status_code == 422
 
 
+def test_post_config_persists_updated_default_dice_faces(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    payload = {
+        "settings": {"default_dice_faces": 10, "web_port": 5000},
+        "categories": {"Test": {"weight": 100, "segments": 2}},
+    }
+
+    response = client.post("/api/config", json=payload)
+
+    assert response.status_code == 200
+    assert response.json()["settings"]["default_dice_faces"] == 10
+
+    saved = load_config(tmp_path / "config.json")
+    assert saved.settings.default_dice_faces == 10
+
+
+def test_post_config_rejects_invalid_default_dice_faces(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    payload = {
+        "settings": {"default_dice_faces": 0, "web_port": 5000},
+        "categories": {"Test": {"weight": 100, "segments": 2}},
+    }
+
+    response = client.post("/api/config", json=payload)
+
+    assert response.status_code == 422
+
+
 def test_post_config_rejects_weights_not_summing_to_100(tmp_path: Path) -> None:
     client = make_client(tmp_path)
     payload = {

@@ -11,7 +11,7 @@ DEFAULT_CONFIG_PATH = Path("config.json")
 
 
 class Settings(BaseModel):
-    default_dice_faces: int = 6
+    default_dice_faces: int = Field(default=6, ge=1)
     web_port: int = 5000
 
 

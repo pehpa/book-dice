@@ -2,14 +2,21 @@ import json
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from book_dice.config import (
     DEFAULT_CONFIG,
     Config,
     ConfigError,
+    Settings,
     load_config,
     save_config,
 )
+
+
+def test_settings_rejects_default_dice_faces_below_one() -> None:
+    with pytest.raises(ValidationError):
+        Settings(default_dice_faces=0)
 
 
 def test_load_config_creates_default_when_missing(tmp_path: Path) -> None:

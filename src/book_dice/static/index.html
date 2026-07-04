@@ -51,6 +51,14 @@
     </section>
 
     <section id="config-view" class="hidden space-y-4">
+      <div class="rounded-lg border border-slate-800 bg-slate-900 p-3 flex items-center justify-between gap-3">
+        <label for="default-dice-faces" class="text-sm text-slate-300">
+          Default dice faces (books per shelf)
+        </label>
+        <input id="default-dice-faces" type="number" min="1"
+          class="w-20 rounded-md bg-slate-800 px-2 py-2 text-sm text-right" />
+      </div>
+
       <div class="flex items-center gap-3 px-3 text-xs uppercase tracking-wide text-slate-500">
         <span class="flex-1 min-w-0">Category name</span>
         <span class="w-40">Weight (%)</span>
@@ -111,6 +119,8 @@
       const res = await fetch("/api/config");
       const config = await res.json();
       currentSettings = config.settings;
+      document.getElementById("default-dice-faces").value =
+        currentSettings.default_dice_faces;
       categoryRows = Object.entries(config.categories).map(([name, cat]) => ({
         name,
         weight: cat.weight,
@@ -143,18 +153,29 @@
         return;
       }
 
+      const defaultDiceFaces = Number(
+        document.getElementById("default-dice-faces").value
+      );
+      if (!Number.isInteger(defaultDiceFaces) || defaultDiceFaces < 1) {
+        showConfigMessage("Default dice faces must be a whole number of at least 1.", true);
+        return;
+      }
+
       const categories = {};
       for (const row of categoryRows) {
         categories[row.name] = { weight: row.weight, segments: row.segments };
       }
 
+      const settings = { ...currentSettings, default_dice_faces: defaultDiceFaces };
+
       const res = await fetch("/api/config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ settings: currentSettings, categories }),
+        body: JSON.stringify({ settings, categories }),
       });
 
       if (res.ok) {
+        currentSettings = settings;
         showConfigMessage("Configuration saved.", false);
       } else {
         const detail = await res.json().catch(() => ({}));
