@@ -26,7 +26,7 @@ def test_main_runs_selection_and_creates_default_config(
     assert re.search(r"\[STAGE 1\] Category:\s+.+\(Weight: \d+%\)", out.out)
     assert re.search(r"\[STAGE 2\] Segment:\s+Shelf Section \d+ \(of \d+\)", out.out)
     assert "Pick 6 books from that shelf." in out.out
-    assert "Digital Roll Result" in out.out
+    assert "You selected book number" in out.out
 
 
 def test_main_waits_for_confirmation_before_rolling_die(
@@ -60,8 +60,8 @@ def test_main_waits_for_confirmation_before_rolling_die(
     out = capsys.readouterr()
     before_prompt, after_prompt = out.out.split(prompts[0])
     assert "Pick" in before_prompt
-    assert "Digital Roll Result" not in before_prompt
-    assert "Digital Roll Result" in after_prompt
+    assert "You selected book number" not in before_prompt
+    assert "You selected book number" in after_prompt
 
 
 def test_main_does_not_warn_when_config_already_exists(
@@ -105,7 +105,7 @@ def test_main_respects_dice_override(
     assert exit_code == 0
     out = capsys.readouterr()
     assert "Pick 8 books from that shelf." in out.out
-    assert re.search(r"Your digital die landed on: \d+", out.out)
+    assert re.search(r"You selected book number: \d+", out.out)
 
 
 def test_main_allows_overriding_dice_faces_at_prompt(
@@ -127,7 +127,7 @@ def test_main_allows_overriding_dice_faces_at_prompt(
     assert exit_code == 0
     out = capsys.readouterr()
     assert "Pick 6 books from that shelf." in out.out
-    match = re.search(r"Your digital die landed on: (\d+)", out.out)
+    match = re.search(r"You selected book number: (\d+)", out.out)
     assert match is not None
     assert 1 <= int(match.group(1)) <= 3
 

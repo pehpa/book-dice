@@ -29,10 +29,7 @@ def format_shelf_selection(shelf: ShelfSelection, dice_faces: int) -> str:
 
 
 def format_die_result(die_roll: int, dice_faces: int) -> str:
-    return (
-        "[Digital Roll Result]: Your digital die landed on: "
-        f"{format_die(die_roll, dice_faces)}"
-    )
+    return f"You selected book number: {format_die(die_roll, dice_faces)}"
 
 
 def build_parser() -> argparse.ArgumentParser:
