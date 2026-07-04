@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from book_dice.config import Config, load_config, save_config
-from book_dice.core import format_die, roll_die, select_shelf
+from book_dice.core import roll_die, select_shelf
 
 STATIC_DIR = Path(__file__).parent / "static"
 
@@ -28,7 +28,6 @@ class ShelfSelectionResponse(BaseModel):
 class DieRollResponse(BaseModel):
     die_roll: int
     die_faces: int
-    die_glyph: str
 
 
 def create_app(config_path: Path) -> FastAPI:
@@ -83,11 +82,7 @@ def create_app(config_path: Path) -> FastAPI:
             dice_faces if dice_faces is not None else config.settings.default_dice_faces
         )
         die_roll = roll_die(faces, random.Random())
-        return DieRollResponse(
-            die_roll=die_roll,
-            die_faces=faces,
-            die_glyph=format_die(die_roll, faces),
-        )
+        return DieRollResponse(die_roll=die_roll, die_faces=faces)
 
     return app
 

@@ -7,21 +7,6 @@ from dataclasses import dataclass
 
 from book_dice.config import Category, Config
 
-DIE_GLYPHS = {
-    1: "⚀",
-    2: "⚁",
-    3: "⚂",
-    4: "⚃",
-    5: "⚄",
-    6: "⚅",
-}
-
-
-def format_die(roll: int, faces: int) -> str:
-    if faces == 6 and roll in DIE_GLYPHS:
-        return f"{DIE_GLYPHS[roll]} ({roll})"
-    return str(roll)
-
 
 def pick_category(categories: dict[str, Category], rng: random.Random) -> str:
     if not categories:

@@ -4,14 +4,7 @@ from collections import Counter
 import pytest
 
 from book_dice.config import Category, Config, Settings
-from book_dice.core import (
-    DIE_GLYPHS,
-    format_die,
-    pick_category,
-    pick_segment,
-    roll_die,
-    select_shelf,
-)
+from book_dice.core import pick_category, pick_segment, roll_die, select_shelf
 
 
 def test_pick_category_respects_weights_within_tolerance() -> None:
@@ -62,15 +55,6 @@ def test_roll_die_bounds() -> None:
 def test_roll_die_raises_on_invalid_faces() -> None:
     with pytest.raises(ValueError):
         roll_die(0, random.Random())
-
-
-def test_format_die_uses_glyph_for_six_sided() -> None:
-    for roll, glyph in DIE_GLYPHS.items():
-        assert format_die(roll, 6) == f"{glyph} ({roll})"
-
-
-def test_format_die_uses_plain_number_for_other_faces() -> None:
-    assert format_die(5, 8) == "5"
 
 
 def test_select_shelf_returns_valid_result() -> None:

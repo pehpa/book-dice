@@ -135,7 +135,6 @@ def test_post_roll_die_returns_valid_roll(tmp_path: Path) -> None:
     body = response.json()
     assert body["die_faces"] == 6
     assert 1 <= body["die_roll"] <= body["die_faces"]
-    assert body["die_glyph"]
 
 
 def test_post_roll_die_respects_dice_faces_override(tmp_path: Path) -> None:

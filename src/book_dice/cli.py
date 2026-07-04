@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 from book_dice.config import DEFAULT_CONFIG_PATH, load_config
-from book_dice.core import ShelfSelection, format_die, roll_die, select_shelf
+from book_dice.core import ShelfSelection, roll_die, select_shelf
 from book_dice.web import run_server
 
 
@@ -28,8 +28,8 @@ def format_shelf_selection(shelf: ShelfSelection, dice_faces: int) -> str:
     return "\n".join(lines)
 
 
-def format_die_result(die_roll: int, dice_faces: int) -> str:
-    return f"You selected book number: {format_die(die_roll, dice_faces)}"
+def format_die_result(die_roll: int) -> str:
+    return f"You selected book number: {die_roll}"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -98,5 +98,5 @@ def main(argv: list[str] | None = None) -> int:
             return 1
 
     die_roll = roll_die(dice_faces, random.Random())
-    print(format_die_result(die_roll, dice_faces))
+    print(format_die_result(die_roll))
     return 0
