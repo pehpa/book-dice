@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>book-dice</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <header class="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+    <h1 class="text-2xl font-bold">🎲 book-dice</h1>
+    <button id="mode-toggle"
+      class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium">
+      Config Mode
+    </button>
+  </header>
+
+  <main class="max-w-2xl mx-auto p-6 space-y-6">
+    <section id="generator-view">
+      <button id="roll-button"
+        class="w-full py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-lg font-bold tracking-wide">
+        GENERATE NEXT BOOK
+      </button>
+
+      <div id="result-box"
+        class="mt-6 rounded-xl border border-slate-800 bg-slate-900 p-6 text-center min-h-[120px] flex flex-col justify-center">
+        <p class="text-slate-500">Press the button to pick your next book.</p>
+      </div>
+
+      <div id="die-box"
+        class="mt-6 rounded-xl border border-slate-800 bg-slate-900 p-6 text-center">
+        <p class="text-sm uppercase tracking-wide text-slate-500 mb-2">Digital Die Result</p>
+        <p id="die-value" class="text-5xl">–</p>
+      </div>
+
+      <p id="roll-error" class="mt-4 text-center text-rose-400 hidden"></p>
+    </section>
+
+    <section id="config-view" class="hidden space-y-4">
+      <div id="category-rows" class="space-y-3"></div>
+
+      <div class="flex gap-3">
+        <button id="add-category"
+          class="flex-1 py-2 rounded-lg border border-slate-700 hover:bg-slate-800 text-sm font-medium">
+          + Add Category
+        </button>
+        <button id="save-config"
+          class="flex-1 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-sm font-medium">
+          Save Configuration
+        </button>
+      </div>
+
+      <p id="config-message" class="text-center text-sm hidden"></p>
+    </section>
+  </main>
+
+  <script>
+    let categoryRows = [];
+    let currentSettings = null;
+
+    function rowTemplate(row, index) {
+      return `
+        <div class="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-900 p-3" data-index="${index}">
+          <input type="text" value="${row.name}" placeholder="Category name"
+            class="row-name flex-1 min-w-0 rounded-md bg-slate-800 px-3 py-2 text-sm" />
+          <div class="flex items-center gap-2 w-40">
+            <input type="range" min="0" max="100" value="${row.weight}" class="row-weight-slider w-full" />
+            <span class="row-weight-value w-10 text-right text-sm">${row.weight}</span>
+          </div>
+          <input type="number" min="1" value="${row.segments}"
+            class="row-segments w-20 rounded-md bg-slate-800 px-2 py-2 text-sm" />
+          <button class="row-remove text-rose-400 hover:text-rose-300 px-2" title="Remove category">✕</button>
+        </div>`;
+    }
+
+    function renderCategoryRows() {
+      const container = document.getElementById("category-rows");
+      container.innerHTML = categoryRows.map(rowTemplate).join("");
+    }
+
+    function readRowsFromDom() {
+      const rows = [...document.querySelectorAll("#category-rows > div")];
+      categoryRows = rows.map((row) => ({
+        name: row.querySelector(".row-name").value.trim(),
+        weight: Number(row.querySelector(".row-weight-slider").value),
+        segments: Number(row.querySelector(".row-segments").value),
+      }));
+    }
+
+    async function loadConfig() {
+      const res = await fetch("/api/config");
+      const config = await res.json();
+      currentSettings = config.settings;
+      categoryRows = Object.entries(config.categories).map(([name, cat]) => ({
+        name,
+        weight: cat.weight,
+        segments: cat.segments,
+      }));
+      renderCategoryRows();
+    }
+
+    function showConfigMessage(text, isError) {
+      const el = document.getElementById("config-message");
+      el.textContent = text;
+      el.classList.remove("hidden", "text-emerald-400", "text-rose-400");
+      el.classList.add(isError ? "text-rose-400" : "text-emerald-400");
+    }
+
+    async function saveConfig() {
+      readRowsFromDom();
+
+      const invalid = categoryRows.some(
+        (row) => !row.name || row.weight < 0 || row.segments < 1
+      );
+      if (invalid) {
+        showConfigMessage("Each category needs a name, a weight ≥ 0, and at least 1 segment.", true);
+        return;
+      }
+
+      const categories = {};
+      for (const row of categoryRows) {
+        categories[row.name] = { weight: row.weight, segments: row.segments };
+      }
+
+      const res = await fetch("/api/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ settings: currentSettings, categories }),
+      });
+
+      if (res.ok) {
+        showConfigMessage("Configuration saved.", false);
+      } else {
+        const detail = await res.json().catch(() => ({}));
+        showConfigMessage(`Save failed: ${detail.detail ?? res.statusText}`, true);
+      }
+    }
+
+    async function rollDice() {
+      const errorEl = document.getElementById("roll-error");
+      errorEl.classList.add("hidden");
+
+      const res = await fetch("/api/roll", { method: "POST" });
+      if (!res.ok) {
+        const detail = await res.json().catch(() => ({}));
+        errorEl.textContent = detail.detail ?? "Something went wrong.";
+        errorEl.classList.remove("hidden");
+        return;
+      }
+
+      const data = await res.json();
+      document.getElementById("result-box").innerHTML = `
+        <p class="text-sm uppercase tracking-wide text-slate-500">Category</p>
+        <p class="text-2xl font-bold">${data.category} <span class="text-base text-slate-400">(${data.weight_percent.toFixed(0)}%)</span></p>
+        <p class="mt-3 text-sm uppercase tracking-wide text-slate-500">Shelf Segment</p>
+        <p class="text-2xl font-bold">Section ${data.segment} of ${data.segments_total}</p>`;
+      document.getElementById("die-value").textContent = data.die_glyph;
+    }
+
+    document.getElementById("roll-button").addEventListener("click", rollDice);
+    document.getElementById("add-category").addEventListener("click", () => {
+      readRowsFromDom();
+      categoryRows.push({ name: "", weight: 10, segments: 1 });
+      renderCategoryRows();
+    });
+    document.getElementById("save-config").addEventListener("click", saveConfig);
+    document.getElementById("category-rows").addEventListener("click", (event) => {
+      if (!event.target.classList.contains("row-remove")) return;
+      const index = Number(event.target.closest("[data-index]").dataset.index);
+      readRowsFromDom();
+      categoryRows.splice(index, 1);
+      renderCategoryRows();
+    });
+    document.getElementById("category-rows").addEventListener("input", (event) => {
+      if (event.target.classList.contains("row-weight-slider")) {
+        event.target.parentElement.querySelector(".row-weight-value").textContent = event.target.value;
+      }
+    });
+
+    const modeToggle = document.getElementById("mode-toggle");
+    const generatorView = document.getElementById("generator-view");
+    const configView = document.getElementById("config-view");
+    modeToggle.addEventListener("click", () => {
+      const enteringConfig = configView.classList.contains("hidden");
+      generatorView.classList.toggle("hidden", enteringConfig);
+      configView.classList.toggle("hidden", !enteringConfig);
+      modeToggle.textContent = enteringConfig ? "Back to Generator" : "Config Mode";
+      if (enteringConfig) loadConfig();
+    });
+  </script>
+</body>
+</html>
