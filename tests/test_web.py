@@ -33,7 +33,7 @@ def test_post_config_persists_to_disk(tmp_path: Path) -> None:
     client = make_client(tmp_path)
     payload = {
         "settings": {"default_dice_faces": 6, "web_port": 5000},
-        "categories": {"Test": {"weight": 5, "segments": 2}},
+        "categories": {"Test": {"weight": 100, "segments": 2}},
     }
 
     response = client.post("/api/config", json=payload)
@@ -52,6 +52,22 @@ def test_post_config_rejects_invalid_payload(tmp_path: Path) -> None:
     response = client.post("/api/config", json=payload)
 
     assert response.status_code == 422
+
+
+def test_post_config_rejects_weights_not_summing_to_100(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    payload = {
+        "settings": {"default_dice_faces": 6, "web_port": 5000},
+        "categories": {
+            "A": {"weight": 30, "segments": 2},
+            "B": {"weight": 30, "segments": 2},
+        },
+    }
+
+    response = client.post("/api/config", json=payload)
+
+    assert response.status_code == 400
+    assert "sum to 100" in response.json()["detail"]
 
 
 def test_post_roll_returns_valid_selection(tmp_path: Path) -> None:

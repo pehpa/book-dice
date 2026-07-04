@@ -39,6 +39,11 @@ def create_app(config_path: Path) -> FastAPI:
 
     @app.post("/api/config")
     def post_config(config: Config) -> Config:
+        total_weight = sum(c.weight for c in config.categories.values())
+        if config.categories and abs(total_weight - 100) > 1e-6:
+            detail = f"Category weights must sum to 100 (currently {total_weight:g})."
+            raise HTTPException(status_code=400, detail=detail)
+
         save_config(config_path, config)
         return config
 

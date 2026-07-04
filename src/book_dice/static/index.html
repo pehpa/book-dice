@@ -37,6 +37,12 @@
     </section>
 
     <section id="config-view" class="hidden space-y-4">
+      <div class="flex items-center gap-3 px-3 text-xs uppercase tracking-wide text-slate-500">
+        <span class="flex-1 min-w-0">Category name</span>
+        <span class="w-40">Weight (%)</span>
+        <span class="w-20">Shelf sections</span>
+        <span class="w-[26px]"></span>
+      </div>
       <div id="category-rows" class="space-y-3"></div>
 
       <div class="flex gap-3">
@@ -114,6 +120,12 @@
       );
       if (invalid) {
         showConfigMessage("Each category needs a name, a weight ≥ 0, and at least 1 segment.", true);
+        return;
+      }
+
+      const totalWeight = categoryRows.reduce((sum, row) => sum + row.weight, 0);
+      if (categoryRows.length > 0 && totalWeight !== 100) {
+        showConfigMessage(`Weights must sum to 100 (currently ${totalWeight}).`, true);
         return;
       }
 
