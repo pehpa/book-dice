@@ -9,7 +9,10 @@ struct CategoryRowView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 TextField("Category name", text: $category.name)
-                    .textFieldStyle(.roundedBorder)
+                    .textFieldStyle(.plain)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(Color.graphite, in: RoundedRectangle(cornerRadius: 8))
                 Button {
                     onRemove()
                 } label: {

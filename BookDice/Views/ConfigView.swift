@@ -19,6 +19,7 @@ struct ConfigView: View {
                         .fixedSize()
                     }
                 }
+                .listRowBackground(Color.graphiteSurface)
 
                 Section("Categories") {
                     ForEach($viewModel.draftCategories) { $category in
@@ -30,18 +31,25 @@ struct ConfigView: View {
                         viewModel.addCategory()
                     }
                 }
+                .listRowBackground(Color.graphiteSurface)
 
                 Section {
                     Button("Save Configuration") {
                         viewModel.saveConfiguration()
                     }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.limeSpark)
+                    .foregroundStyle(Color.graphite)
                     .frame(maxWidth: .infinity)
                     if let message = viewModel.configMessage {
                         Text(message.text)
                             .foregroundStyle(.red)
                     }
                 }
+                .listRowBackground(Color.graphiteSurface)
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.graphite)
 
             VStack(spacing: 8) {
                 ForEach(viewModel.toasts) { toast in
