@@ -27,6 +27,7 @@
 		601A7F20438774FE10B9A9F2 /* GeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorView.swift; sourceTree = "<group>"; };
 		69640F63E33E859C259CC65F /* BookDiceKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BookDiceKit; path = BookDiceKit; sourceTree = SOURCE_ROOT; };
 		7B02ABDD22D9D5B662A84717 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		90F98580506C82B1A4AA5E84 /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = "<group>"; };
 		BB5A8A167D56D9F40F42118D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C8B6D2621B7D9648050F4D9D /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		D092A9F1CC95816A7576EC49 /* ConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigView.swift; sourceTree = "<group>"; };
@@ -56,6 +57,7 @@
 		2EEA9400030C797F328D8F4F = {
 			isa = PBXGroup;
 			children = (
+				D29347A6AD3D54982CC3515E /* book-dice */,
 				F7475C715BD51391BAF8791F /* BookDice */,
 				B36D75C55B53E1743DF9F80A /* Packages */,
 				3C473758A6D4F5C2E9DAAFC4 /* Products */,
@@ -88,6 +90,15 @@
 				69640F63E33E859C259CC65F /* BookDiceKit */,
 			);
 			name = Packages;
+			sourceTree = "<group>";
+		};
+		D29347A6AD3D54982CC3515E /* book-dice */ = {
+			isa = PBXGroup;
+			children = (
+				90F98580506C82B1A4AA5E84 /* Local.xcconfig */,
+			);
+			name = "book-dice";
+			path = .;
 			sourceTree = "<group>";
 		};
 		F7475C715BD51391BAF8791F /* BookDice */ = {
@@ -194,6 +205,7 @@
 /* Begin XCBuildConfiguration section */
 		0E3B62544AF08C810DF43BF8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 90F98580506C82B1A4AA5E84 /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -255,7 +267,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7DPLLTX4Z9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Book Dice";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -275,6 +286,7 @@
 		};
 		8C1DF06674CF985211FECA2C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 90F98580506C82B1A4AA5E84 /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -343,7 +355,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7DPLLTX4Z9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Book Dice";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

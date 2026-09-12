@@ -1,0 +1,11 @@
+// Copy this file to Local.xcconfig (gitignored) before running
+// `xcodegen generate`. Local.xcconfig holds your own Apple Developer
+// Team ID so it never gets committed to this public repo.
+//
+// Find your Team ID: Xcode > Settings > Accounts > select your Apple ID
+// > select your team (the ID is shown next to the team name), or at
+// https://developer.apple.com/account under Membership Details.
+//
+// Leave the value blank to build without a team (manual/no signing).
+
+DEVELOPMENT_TEAM =
