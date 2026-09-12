@@ -5,7 +5,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
+# One-time setup: copy the xcconfig template and fill in your own Apple
+# Developer Team ID (or leave it blank to build without a team). This file
+# is gitignored — personal/account-specific settings never get committed.
+cp Local.xcconfig.template Local.xcconfig
+
 # Regenerate BookDice.xcodeproj from project.yml (after adding/removing files or targets)
+# Note: this bakes your local Local.xcconfig's DEVELOPMENT_TEAM into
+# project.pbxproj's TargetAttributes (Xcode's Signing & Capabilities UI
+# needs a literal value there — it can't reference an xcconfig). Before
+# committing a regenerated project.pbxproj, check `git diff` for a
+# `DevelopmentTeam = ...;` line and drop that hunk if present.
 xcodegen generate
 
 # Run BookDiceKit's test suite (no Xcode needed)

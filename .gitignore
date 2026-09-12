@@ -4,3 +4,7 @@ xcuserdata/
 DerivedData/
 *.xcuserstate
 .claude/settings.local.json
+
+# Personal/account-specific build settings (Development Team etc.) — see
+# Local.xcconfig.template for the tracked placeholder contributors copy from.
+Local.xcconfig
