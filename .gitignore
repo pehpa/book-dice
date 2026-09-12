@@ -1,22 +1,6 @@
-__pycache__/
-*.py[cod]
-*.egg-info/
-dist/
-build/
-.venv/
-venv/
-.env
-.mypy_cache/
-.ruff_cache/
-.pytest_cache/
-htmlcov/
-.coverage
-config.json
-.claude/settings.local.json
-
-# Xcode / Swift Package Manager
 xcuserdata/
 .build/
 .swiftpm/
 DerivedData/
 *.xcuserstate
+.claude/settings.local.json

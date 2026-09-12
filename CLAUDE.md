@@ -5,31 +5,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Install (editable + dev deps)
-pip install -e ".[dev]"
+# Regenerate BookDice.xcodeproj from project.yml (after adding/removing files or targets)
+xcodegen generate
 
-# Run all tests
-pytest
+# Run BookDiceKit's test suite (no Xcode needed)
+cd BookDiceKit
+swift test
 
 # Run a single test
-pytest tests/test_foo.py::test_bar
+swift test --filter CoreTests/testPickCategoryRespectsWeights
 
-# Lint
-ruff check .
-
-# Format
-ruff format .
-
-# Type check
-mypy src
+# Build/run the app: open BookDice.xcodeproj in Xcode and use the Simulator or a
+# connected device, or:
+xcodebuild -project BookDice.xcodeproj -scheme BookDice build
 ```
 
 ## Architecture
 
-`src` layout: the package lives at `src/book_dice/` and is installed as `book_dice`. Tests live in `tests/`. Build backend is hatchling. Python ≥ 3.11 required, mypy strict mode enforced.
+Two parts, wired together via `project.yml` (an [XcodeGen](https://github.com/yonaskolb/XcodeGen) spec) into `BookDice.xcodeproj`, which is checked in and regenerated from `project.yml` rather than hand-edited.
 
-- `config.py` — pydantic `Config`/`Settings`/`Category` models plus `load_config`/`save_config`. `config.json` is created with defaults on first run and is gitignored. `Settings.default_dice_faces` and `Category.segments` both require `>= 1`; `Category.weight` requires `>= 0`.
-- `core.py` — pure selection logic, no I/O: `pick_category`, `pick_segment`, `roll_die`, and `select_shelf` (combines the first two into a `ShelfSelection`). All take an explicit `random.Random` (or default to an unseeded one), which is what makes them testable with fixed seeds.
-- `cli.py` — argparse entry point. Selection is a deliberate two-phase interactive flow: print the shelf/category pick, then `input()` blocks until the user presses Enter (roll with the default/`--dice` count) or types a number (one-off override for that roll only). Tests must `monkeypatch.setattr("builtins.input", ...)`.
-- `web.py` — FastAPI app mirroring the same two phases as separate endpoints: `POST /api/select-shelf` (category + segment, no roll) and `POST /api/roll-die` (optional `?dice_faces=` query override). `GET/POST /api/config` reads/writes `config.json`; saving via the API rejects category weights that don't sum to 100 (skipped if there are zero categories).
-- `static/index.html` — single-file frontend (Tailwind via CDN script, not a production build), served directly by the `/` route. No other static assets are currently mounted.
+- `BookDiceKit/` — a Swift package (`Package.swift`) with the pure, testable logic. No SwiftUI/UIKit dependency.
+  - `Core.swift` — pure selection logic: `pickCategory` (weighted), `pickSegment` (uniform), `rollDie`, and `selectShelf` (combines the first two into a `ShelfSelection`). Takes an injectable RNG (`RandomSource.swift`), which is what makes it testable with fixed seeds.
+  - `Models.swift` — `Settings`/`BookCategory`/`BookDiceConfig`, the config schema (category name → weight/segments, plus default dice-face count).
+  - `ConfigStore.swift` — loads/creates/persists the config on-device (Application Support), analogous to load/save with defaults on first run.
+  - `Validation.swift` — category-weight handling for saves; normalizes weights that don't sum to 100% rather than rejecting the save.
+  - Tests live in `Tests/BookDiceKitTests/` (`CoreTests.swift`, `ConfigStoreTests.swift`, `ValidationTests.swift`).
+- `BookDice/` — the SwiftUI app target.
+  - `BookDiceApp.swift` — app entry point.
+  - `ViewModels/AppViewModel.swift` — drives the same two-phase flow as the underlying logic: pick a shelf/category, then roll once the user confirms how many books they gathered.
+  - `Views/` — `ContentView.swift` (top-level), `GeneratorView.swift` (the roll flow), `ConfigView.swift` + `CategoryRowView.swift` (editing categories/weights/segments).
+  - `Assets.xcassets/` — app icon and asset catalog.
