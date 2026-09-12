@@ -10,6 +10,7 @@
 		067E32D02D40066BD33AE01C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5A8A167D56D9F40F42118D /* ContentView.swift */; };
 		1ADD7C2E2918281A1902A26A /* CategoryRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29BA44FC63020EFA33693DC /* CategoryRowView.swift */; };
 		4A3C9E22649042452913DE74 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8B6D2621B7D9648050F4D9D /* Theme.swift */; };
+		570EF64CA87E52BC71E34F8B /* TitleBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531F731A1D663615AC9B9E21 /* TitleBannerView.swift */; };
 		6A8C36D664CEA71FE13BDB55 /* BookDiceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3462C1A562C6AB6DC2EED406 /* BookDiceKit */; };
 		6F8F18DFDC3C99E290A9F584 /* BookDiceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB41821851DC01DE495C8A8 /* BookDiceApp.swift */; };
 		C30074460E02A4E68549AE4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4ABDE5FD011B874378F7FA87 /* Assets.xcassets */; };
@@ -19,11 +20,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		472FCC4C4E119F2E6E955BF1 /* book-dice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "book-dice.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		472FCC4C4E119F2E6E955BF1 /* BookDice.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BookDice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AB41821851DC01DE495C8A8 /* BookDiceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDiceApp.swift; sourceTree = "<group>"; };
 		4ABDE5FD011B874378F7FA87 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		531F731A1D663615AC9B9E21 /* TitleBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleBannerView.swift; sourceTree = "<group>"; };
 		601A7F20438774FE10B9A9F2 /* GeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorView.swift; sourceTree = "<group>"; };
-		69640F63E33E859C259CC65F /* BookDiceKit */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BookDiceKit; sourceTree = SOURCE_ROOT; };
+		69640F63E33E859C259CC65F /* BookDiceKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BookDiceKit; path = BookDiceKit; sourceTree = SOURCE_ROOT; };
 		7B02ABDD22D9D5B662A84717 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		BB5A8A167D56D9F40F42118D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C8B6D2621B7D9648050F4D9D /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -63,7 +65,7 @@
 		3C473758A6D4F5C2E9DAAFC4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				472FCC4C4E119F2E6E955BF1 /* book-dice.app */,
+				472FCC4C4E119F2E6E955BF1 /* BookDice.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -75,6 +77,7 @@
 				D092A9F1CC95816A7576EC49 /* ConfigView.swift */,
 				BB5A8A167D56D9F40F42118D /* ContentView.swift */,
 				601A7F20438774FE10B9A9F2 /* GeneratorView.swift */,
+				531F731A1D663615AC9B9E21 /* TitleBannerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -119,7 +122,7 @@
 				3462C1A562C6AB6DC2EED406 /* BookDiceKit */,
 			);
 			productName = BookDice;
-			productReference = 472FCC4C4E119F2E6E955BF1 /* book-dice.app */;
+			productReference = 472FCC4C4E119F2E6E955BF1 /* BookDice.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -132,6 +135,7 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					33E0DC8849CEF032103EC44C = {
+						DevelopmentTeam = 7DPLLTX4Z9;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -181,6 +185,7 @@
 				067E32D02D40066BD33AE01C /* ContentView.swift in Sources */,
 				F207968C94309DCFBBB49B0D /* GeneratorView.swift in Sources */,
 				4A3C9E22649042452913DE74 /* Theme.swift in Sources */,
+				570EF64CA87E52BC71E34F8B /* TitleBannerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
