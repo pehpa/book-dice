@@ -20,6 +20,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.pehpa.bookdice
         PRODUCT_NAME: book-dice
+        INFOPLIST_KEY_CFBundleDisplayName: "Book Dice"
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait

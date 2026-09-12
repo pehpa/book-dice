@@ -24,10 +24,9 @@ final class AppViewModel: ObservableObject {
     @Published var draftDefaultDiceFaces: Int = 6
     @Published var draftCategories: [BookCategory] = []
     @Published var configMessage: (text: String, isError: Bool)?
-    @Published private(set) var normalizationNotice: String?
+    @Published private(set) var toasts: [ConfigToast] = []
 
     private let store: ConfigStore
-    private var normalizationNoticeTask: Task<Void, Never>?
 
     init(store: ConfigStore = .defaultStore()) {
         self.store = store
@@ -107,22 +106,35 @@ final class AppViewModel: ObservableObject {
         do {
             try store.save(newConfig)
             config = newConfig
-            configMessage = ("Configuration saved.", false)
+            configMessage = nil
+            showToast("Configuration saved.", style: .success)
             if didNormalize {
-                showNormalizationNotice("Weights didn't add up to 100% — normalized automatically.")
+                showToast("Weights didn't add up to 100% — normalized automatically.", style: .warning)
             }
         } catch {
             configMessage = ("Save failed: \(error.localizedDescription)", true)
         }
     }
 
-    private func showNormalizationNotice(_ text: String) {
-        normalizationNoticeTask?.cancel()
-        normalizationNotice = text
-        normalizationNoticeTask = Task { [weak self] in
+    private func showToast(_ text: String, style: ConfigToast.Style) {
+        let toast = ConfigToast(text: text, style: style)
+        toasts.append(toast)
+        Task { [weak self] in
             try? await Task.sleep(for: .seconds(2.5))
-            guard !Task.isCancelled else { return }
-            self?.normalizationNotice = nil
+            self?.toasts.removeAll { $0.id == toast.id }
         }
     }
+}
+
+/// A transient overlay pop-up shown over the config form, color-coded by kind
+/// (e.g. a green "saved" confirmation vs. an orange normalization warning).
+struct ConfigToast: Identifiable, Equatable {
+    enum Style: Equatable {
+        case success
+        case warning
+    }
+
+    let id = UUID()
+    let text: String
+    let style: Style
 }

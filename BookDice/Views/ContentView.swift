@@ -13,7 +13,8 @@ struct ContentView: View {
                     ConfigView(viewModel: viewModel)
                 }
             }
-            .navigationTitle("🎲 book-dice")
+            .navigationTitle("🎲 Book Dice")
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if viewModel.mode == .generator {
