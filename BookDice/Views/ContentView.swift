@@ -7,8 +7,10 @@ struct ContentView: View {
         NavigationStack {
             GeneratorView(viewModel: viewModel)
                 .background(Color.graphite.ignoresSafeArea())
-                .navigationTitle("🎲 Book Dice")
-                .navigationBarTitleDisplayMode(.large)
+                // The banner artwork at the top of each screen is the title
+                // now, so the nav bar itself stays title-less and compact.
+                .navigationTitle("")
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
@@ -35,8 +37,8 @@ struct ContentView: View {
                 ) {
                     ConfigView(viewModel: viewModel)
                         .background(Color.graphite.ignoresSafeArea())
-                        .navigationTitle("🎲 Book Dice")
-                        .navigationBarTitleDisplayMode(.large)
+                        .navigationTitle("")
+                        .navigationBarTitleDisplayMode(.inline)
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {

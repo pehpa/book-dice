@@ -5,6 +5,18 @@ struct ConfigView: View {
     @ObservedObject var viewModel: AppViewModel
 
     var body: some View {
+        VStack(spacing: 0) {
+            TitleBannerView()
+                .padding(.horizontal)
+                .padding(.top, Metrics.titleTopPadding)
+                .padding(.bottom, Metrics.titleBottomPadding)
+
+            configForm
+        }
+        .background(Color.graphite.ignoresSafeArea())
+    }
+
+    private var configForm: some View {
         ZStack(alignment: .top) {
             Form {
                 Section {
@@ -34,19 +46,21 @@ struct ConfigView: View {
                 .listRowBackground(Color.graphiteSurface)
 
                 Section {
-                    Button("Save Configuration") {
+                    Button {
                         viewModel.saveConfiguration()
+                    } label: {
+                        Text("Save Configuration")
+                            .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.limeSpark)
                     .foregroundStyle(Color.graphite)
-                    .frame(maxWidth: .infinity)
                     if let message = viewModel.configMessage {
                         Text(message.text)
                             .foregroundStyle(.red)
                     }
                 }
-                .listRowBackground(Color.graphiteSurface)
+                .listRowBackground(Color.clear)
             }
             .scrollContentBackground(.hidden)
             .background(Color.graphite)

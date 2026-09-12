@@ -4,42 +4,52 @@ struct GeneratorView: View {
     @ObservedObject var viewModel: AppViewModel
 
     var body: some View {
-        VStack(spacing: 24) {
-            HStack(spacing: 12) {
-                Button("GENERATE NEXT BOOK") {
-                    viewModel.generateNextBook()
+        VStack(spacing: 0) {
+            TitleBannerView()
+                .padding(.horizontal)
+                .padding(.top, Metrics.titleTopPadding)
+                .padding(.bottom, Metrics.titleBottomPadding)
+
+            VStack(spacing: 24) {
+                HStack(spacing: 12) {
+                    Button {
+                        viewModel.generateNextBook()
+                    } label: {
+                        Text("GENERATE NEXT BOOK")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.limeSpark)
+                    .foregroundStyle(Color.graphite)
+                    .controlSize(.large)
+
+                    Button("Reset") {
+                        viewModel.resetGenerator()
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                    .fixedSize()
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.limeSpark)
-                .foregroundStyle(Color.graphite)
-                .controlSize(.large)
-                .frame(maxWidth: .infinity)
 
-                Button("Reset") {
-                    viewModel.resetGenerator()
+                resultBox
+
+                if viewModel.shelfSelection != nil {
+                    rollControls
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .fixedSize()
+
+                dieResultBox
+
+                if let error = viewModel.generatorError {
+                    Text(error)
+                        .foregroundStyle(.red)
+                        .multilineTextAlignment(.center)
+                }
+
+                Spacer(minLength: 0)
             }
-
-            resultBox
-
-            if viewModel.shelfSelection != nil {
-                rollControls
-            }
-
-            dieResultBox
-
-            if let error = viewModel.generatorError {
-                Text(error)
-                    .foregroundStyle(.red)
-                    .multilineTextAlignment(.center)
-            }
-
-            Spacer(minLength: 0)
+            .padding(.horizontal)
+            .padding(.bottom)
         }
-        .padding()
     }
 
     @ViewBuilder
@@ -87,13 +97,15 @@ struct GeneratorView: View {
                 Stepper("", value: $viewModel.diceFacesOverride, in: 1...99)
                     .labelsHidden()
                     .fixedSize()
-                Button("🎲 Roll the die!") {
+                Button {
                     viewModel.rollDie()
+                } label: {
+                    Text("🎲 Roll the die!")
+                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.limeSpark)
                 .foregroundStyle(Color.graphite)
-                .frame(maxWidth: .infinity)
             }
         }
     }

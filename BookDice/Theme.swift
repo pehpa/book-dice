@@ -16,3 +16,12 @@ extension Color {
     /// pair it with a specific foreground color for contrast).
     static let limeSpark = Color("LimeSpark")
 }
+
+/// Shared layout constants so the two screens' headers line up identically.
+enum Metrics {
+    /// Gap between the nav bar and the title mark — kept tight.
+    static let titleTopPadding: CGFloat = 4
+    /// Gap between the title mark and each screen's own content below —
+    /// kept generous so the title reads as its own element.
+    static let titleBottomPadding: CGFloat = 28
+}
