@@ -18,11 +18,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		472FCC4C4E119F2E6E955BF1 /* BookDice.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BookDice.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		472FCC4C4E119F2E6E955BF1 /* book-dice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "book-dice.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AB41821851DC01DE495C8A8 /* BookDiceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDiceApp.swift; sourceTree = "<group>"; };
 		4ABDE5FD011B874378F7FA87 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		601A7F20438774FE10B9A9F2 /* GeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorView.swift; sourceTree = "<group>"; };
-		69640F63E33E859C259CC65F /* BookDiceKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BookDiceKit; path = BookDiceKit; sourceTree = SOURCE_ROOT; };
+		69640F63E33E859C259CC65F /* BookDiceKit */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BookDiceKit; sourceTree = SOURCE_ROOT; };
 		7B02ABDD22D9D5B662A84717 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		BB5A8A167D56D9F40F42118D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D092A9F1CC95816A7576EC49 /* ConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigView.swift; sourceTree = "<group>"; };
@@ -61,7 +61,7 @@
 		3C473758A6D4F5C2E9DAAFC4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				472FCC4C4E119F2E6E955BF1 /* BookDice.app */,
+				472FCC4C4E119F2E6E955BF1 /* book-dice.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -116,7 +116,7 @@
 				3462C1A562C6AB6DC2EED406 /* BookDiceKit */,
 			);
 			productName = BookDice;
-			productReference = 472FCC4C4E119F2E6E955BF1 /* BookDice.app */;
+			productReference = 472FCC4C4E119F2E6E955BF1 /* book-dice.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -246,7 +246,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7DPLLTX4Z9;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Book Dice";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -332,7 +334,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7DPLLTX4Z9;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Book Dice";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (

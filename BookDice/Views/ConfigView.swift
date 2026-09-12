@@ -8,11 +8,16 @@ struct ConfigView: View {
         ZStack(alignment: .top) {
             Form {
                 Section {
-                    Stepper(
-                        "Default dice faces: \(viewModel.draftDefaultDiceFaces)",
-                        value: $viewModel.draftDefaultDiceFaces,
-                        in: 1...99
-                    )
+                    HStack {
+                        Text("Default die faces").font(.caption).foregroundStyle(.secondary)
+                        Spacer()
+                        Stepper(
+                            "\(viewModel.draftDefaultDiceFaces)",
+                            value: $viewModel.draftDefaultDiceFaces,
+                            in: 1...99
+                        )
+                        .fixedSize()
+                    }
                 }
 
                 Section("Categories") {
@@ -33,24 +38,40 @@ struct ConfigView: View {
                     .frame(maxWidth: .infinity)
                     if let message = viewModel.configMessage {
                         Text(message.text)
-                            .foregroundStyle(message.isError ? .red : .green)
+                            .foregroundStyle(.red)
                     }
                 }
             }
 
-            if let notice = viewModel.normalizationNotice {
-                Text(notice)
-                    .font(.footnote)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(.thinMaterial, in: Capsule())
-                    .shadow(radius: 4)
-                    .padding(.top, 8)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                    .zIndex(1)
+            VStack(spacing: 8) {
+                ForEach(viewModel.toasts) { toast in
+                    Text(toast.text)
+                        .font(.footnote)
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(toast.style.backgroundColor, in: Capsule())
+                        .shadow(radius: 4)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
             }
+            .padding(.top, 8)
+            .zIndex(1)
         }
-        .animation(.easeInOut, value: viewModel.normalizationNotice)
+        .animation(.easeInOut, value: viewModel.toasts)
+    }
+}
+
+private extension ConfigToast.Style {
+    /// Warning (normalization) reads as a slightly yellowish orange;
+    /// success (configuration saved) reads as green.
+    var backgroundColor: Color {
+        switch self {
+        case .success:
+            return Color.green.opacity(0.85)
+        case .warning:
+            return Color.orange.opacity(0.85)
+        }
     }
 }
