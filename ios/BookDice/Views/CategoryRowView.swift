@@ -16,13 +16,18 @@ struct CategoryRowView: View {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(.red)
                 }
+                .buttonStyle(.borderless)
             }
             HStack {
                 Text("Weight").font(.caption).foregroundStyle(.secondary)
-                Slider(value: $category.weight, in: 0...100, step: 1)
-                Text("\(Int(category.weight))%")
-                    .font(.caption)
-                    .frame(width: 40, alignment: .trailing)
+                Spacer()
+                Stepper(
+                    "\(Int(category.weight))%",
+                    value: $category.weight,
+                    in: 0...100,
+                    step: 1
+                )
+                .fixedSize()
             }
             HStack {
                 Text("Shelf sections").font(.caption).foregroundStyle(.secondary)

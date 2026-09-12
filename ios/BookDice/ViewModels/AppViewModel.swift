@@ -17,19 +17,23 @@ final class AppViewModel: ObservableObject {
     // Generator screen state
     @Published var shelfSelection: ShelfSelection?
     @Published var dieResult: Int?
-    @Published var diceFacesOverrideText: String = ""
+    @Published var diceFacesOverride: Int = 6
     @Published var generatorError: String?
 
     // Config screen state (a working copy, mirroring index.html's categoryRows)
-    @Published var draftDefaultDiceFaces: String = ""
+    @Published var draftDefaultDiceFaces: Int = 6
     @Published var draftCategories: [BookCategory] = []
     @Published var configMessage: (text: String, isError: Bool)?
+    @Published private(set) var normalizationNotice: String?
 
     private let store: ConfigStore
+    private var normalizationNoticeTask: Task<Void, Never>?
 
     init(store: ConfigStore = .defaultStore()) {
         self.store = store
-        self.config = (try? store.load()) ?? .default
+        let loaded = (try? store.load()) ?? .default
+        self.config = loaded
+        self.diceFacesOverride = loaded.settings.defaultDiceFaces
     }
 
     // MARK: - Generator
@@ -40,7 +44,7 @@ final class AppViewModel: ObservableObject {
         do {
             let selection = try selectShelf(config: config)
             shelfSelection = selection
-            diceFacesOverrideText = String(config.settings.defaultDiceFaces)
+            diceFacesOverride = config.settings.defaultDiceFaces
         } catch {
             shelfSelection = nil
             generatorError = error.localizedDescription
@@ -49,22 +53,26 @@ final class AppViewModel: ObservableObject {
 
     func rollDie() {
         generatorError = nil
-        guard let diceFaces = Int(diceFacesOverrideText), diceFaces >= 1 else {
-            generatorError = "Books picked must be a whole number of at least 1."
-            return
-        }
         do {
-            dieResult = try BookDiceKit.rollDie(faces: diceFaces)
+            dieResult = try BookDiceKit.rollDie(faces: diceFacesOverride)
         } catch {
             generatorError = error.localizedDescription
         }
+    }
+
+    /// Restores the generator screen to the state it's in right after launch.
+    func resetGenerator() {
+        shelfSelection = nil
+        dieResult = nil
+        generatorError = nil
+        diceFacesOverride = config.settings.defaultDiceFaces
     }
 
     // MARK: - Config
 
     func enterConfigMode() {
         config = (try? store.load()) ?? config
-        draftDefaultDiceFaces = String(config.settings.defaultDiceFaces)
+        draftDefaultDiceFaces = config.settings.defaultDiceFaces
         draftCategories = config.categories
         configMessage = nil
         mode = .config
@@ -87,21 +95,34 @@ final class AppViewModel: ObservableObject {
             configMessage = (validationError.localizedDescription ?? "Invalid configuration.", true)
             return
         }
-        guard let defaultDiceFaces = Int(draftDefaultDiceFaces), defaultDiceFaces >= 1 else {
-            configMessage = ("Default dice faces must be a whole number of at least 1.", true)
-            return
-        }
+
+        let normalized = normalizedCategories(draftCategories)
+        let didNormalize = normalized != draftCategories
+        draftCategories = normalized
 
         var newConfig = config
-        newConfig.settings.defaultDiceFaces = defaultDiceFaces
-        newConfig.categories = draftCategories
+        newConfig.settings.defaultDiceFaces = draftDefaultDiceFaces
+        newConfig.categories = normalized
 
         do {
             try store.save(newConfig)
             config = newConfig
             configMessage = ("Configuration saved.", false)
+            if didNormalize {
+                showNormalizationNotice("Weights didn't add up to 100% — normalized automatically.")
+            }
         } catch {
             configMessage = ("Save failed: \(error.localizedDescription)", true)
+        }
+    }
+
+    private func showNormalizationNotice(_ text: String) {
+        normalizationNoticeTask?.cancel()
+        normalizationNotice = text
+        normalizationNoticeTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(2.5))
+            guard !Task.isCancelled else { return }
+            self?.normalizationNotice = nil
         }
     }
 }

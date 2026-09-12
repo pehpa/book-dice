@@ -16,10 +16,15 @@ struct ContentView: View {
             .navigationTitle("🎲 book-dice")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(viewModel.mode == .generator ? "Config Mode" : "Back to Generator") {
-                        if viewModel.mode == .generator {
+                    if viewModel.mode == .generator {
+                        Button {
                             viewModel.enterConfigMode()
-                        } else {
+                        } label: {
+                            Image(systemName: "gearshape")
+                        }
+                        .accessibilityLabel("Config Mode")
+                    } else {
+                        Button("Back to Generator") {
                             viewModel.exitConfigMode()
                         }
                     }

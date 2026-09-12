@@ -4,8 +4,8 @@ struct GeneratorView: View {
     @ObservedObject var viewModel: AppViewModel
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
+        VStack(spacing: 24) {
+            HStack(spacing: 12) {
                 Button("GENERATE NEXT BOOK") {
                     viewModel.generateNextBook()
                 }
@@ -13,22 +13,31 @@ struct GeneratorView: View {
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
 
-                resultBox
-
-                if viewModel.shelfSelection != nil {
-                    rollControls
+                Button("Reset") {
+                    viewModel.resetGenerator()
                 }
-
-                dieResultBox
-
-                if let error = viewModel.generatorError {
-                    Text(error)
-                        .foregroundStyle(.red)
-                        .multilineTextAlignment(.center)
-                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .fixedSize()
             }
-            .padding()
+
+            resultBox
+
+            if viewModel.shelfSelection != nil {
+                rollControls
+            }
+
+            dieResultBox
+
+            if let error = viewModel.generatorError {
+                Text(error)
+                    .foregroundStyle(.red)
+                    .multilineTextAlignment(.center)
+            }
+
+            Spacer(minLength: 0)
         }
+        .padding()
     }
 
     @ViewBuilder
@@ -60,7 +69,7 @@ struct GeneratorView: View {
     }
 
     private var currentDiceFaces: Int {
-        Int(viewModel.diceFacesOverrideText) ?? viewModel.config.settings.defaultDiceFaces
+        viewModel.diceFacesOverride
     }
 
     private var rollControls: some View {
@@ -68,11 +77,14 @@ struct GeneratorView: View {
             Text("Books actually picked (change if it wasn't the default)")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            HStack {
-                TextField("Books picked", text: $viewModel.diceFacesOverrideText)
-                    .keyboardType(.numberPad)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(width: 80)
+            HStack(spacing: 8) {
+                Text("\(viewModel.diceFacesOverride)")
+                    .font(.headline)
+                    .monospacedDigit()
+                    .frame(minWidth: 24)
+                Stepper("", value: $viewModel.diceFacesOverride, in: 1...99)
+                    .labelsHidden()
+                    .fixedSize()
                 Button("🎲 Roll the die!") {
                     viewModel.rollDie()
                 }
