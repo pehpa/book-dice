@@ -13,6 +13,7 @@ struct ContentView: View {
                     ConfigView(viewModel: viewModel)
                 }
             }
+            .background(Color.graphite.ignoresSafeArea())
             .navigationTitle("🎲 Book Dice")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -32,5 +33,7 @@ struct ContentView: View {
                 }
             }
         }
+        .tint(.limeSpark)
+        .preferredColorScheme(.dark)
     }
 }

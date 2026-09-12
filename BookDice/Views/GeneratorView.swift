@@ -10,6 +10,8 @@ struct GeneratorView: View {
                     viewModel.generateNextBook()
                 }
                 .buttonStyle(.borderedProminent)
+                .tint(.limeSpark)
+                .foregroundStyle(Color.graphite)
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
 
@@ -64,7 +66,7 @@ struct GeneratorView: View {
         }
         .frame(maxWidth: .infinity, minHeight: 120)
         .padding()
-        .background(.quaternary.opacity(0.3))
+        .background(Color.graphiteSurface)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
@@ -89,7 +91,8 @@ struct GeneratorView: View {
                     viewModel.rollDie()
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.green)
+                .tint(.limeSpark)
+                .foregroundStyle(Color.graphite)
                 .frame(maxWidth: .infinity)
             }
         }
@@ -105,7 +108,7 @@ struct GeneratorView: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(.quaternary.opacity(0.3))
+        .background(Color.graphiteSurface)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
