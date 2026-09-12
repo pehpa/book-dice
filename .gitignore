@@ -13,3 +13,10 @@ htmlcov/
 .coverage
 config.json
 .claude/settings.local.json
+
+# Xcode / Swift Package Manager
+xcuserdata/
+.build/
+.swiftpm/
+DerivedData/
+*.xcuserstate
